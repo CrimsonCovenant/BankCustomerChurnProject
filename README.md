@@ -11,10 +11,10 @@ The primary objective of this project was to develop a machine learning system c
 
 The project utilized several datasets:
 * **Customer Complaints:** Detailed records including product type, issue description, company response, state, and ZIP code (e.g., `complaints-2025-05-01_22_48.csv`).
-* **National Income & Demographics:** ZIP code level data including population and various income metrics (`national_income_clean.xls`).
-* **Economic Indicators:** Additional datasets covering median wages, consumer credit, business loans, and bank deposits (`median_wages_clean.xls`, `cclac_clean.xls`, `busloans_clean.xls`, `sod_clean.xls`).
+* **National Income & Demographics:** ZIP code level data including population and various income metrics (`national_income_clean.csv`).
+* **Economic Indicators:** Additional datasets covering median wages, consumer credit, business loans, and bank deposits (`median_wages_clean.csv`, `cclac_clean.csv`, `busloans_clean.csv`, `sod_clean.csv`).
 
-**Data Cleaning (`FinalCleaning.pdf`):**
+**Data Cleaning:**
 Significant effort was dedicated to data wrangling and cleaning:
 * Standardizing formats, particularly ZIP codes (ensuring 5-digit string representation).
 * Handling missing values through imputation (e.g., imputing missing ZIPs based on state capitals, imputing missing states based on ZIPs using `pgeocode`) or strategic removal.
@@ -28,9 +28,9 @@ The final cleaned dataset used for the primary churn prediction model is saved a
 
 A multi-model approach was adopted to explore different facets of the data and address the project goals:
 
-1.  **Linear Regression (Part 3):** Attempted to predict complaint *rates* per capita based on aggregated annual economic/demographic data.
-2.  **Classification (Complaint Rate Category - Part 3):** Random Forest and Neural Network models were used to classify ZIP codes into 'Low'/'Medium'/'High' complaint rate categories based on a median split, incorporating income/demographics and aggregated complaint features.
-3.  **Random Forest (Churn Risk Prediction - Part 4 / `FinalModel.pdf`):** Focused on predicting the binary `is_churn_risk` proxy using only categorical features derived from individual complaints: `Product`, `Issue`, `Company`, and `State`. This isolated the impact of complaint context.
+1.  **Linear Regression:** Attempted to predict complaint *rates* per capita based on aggregated annual economic/demographic data.
+2.  **Classification Complaint Rate Category:** Random Forest and Neural Network models were used to classify ZIP codes into 'Low'/'Medium'/'High' complaint rate categories based on a median split, incorporating income/demographics and aggregated complaint features.
+3.  **Random Forest Churn Risk Prediction:** Focused on predicting the binary `is_churn_risk` proxy using only categorical features derived from individual complaints: `Product`, `Issue`, `Company`, and `State`. This isolated the impact of complaint context.
 
 Preprocessing for classification models involved imputation (median/most frequent) and scaling (StandardScaler) for numeric features (where used), and imputation (most frequent) and One-Hot Encoding for categorical features, managed within scikit-learn Pipelines.
 
@@ -38,7 +38,7 @@ Preprocessing for classification models involved imputation (median/most frequen
 
 * **Linear Regression Failure:** The initial attempt to predict complaint rates linearly based on aggregate economic/demographic data yielded very poor results (R² ≈ 0.03), indicating these factors alone are weak predictors of complaint volume in a linear fashion.
 * **Initial Classification Success (Caution Advised):** Models classifying ZIP codes based on a median split of complaint rates achieved near-perfect accuracy. However, this was likely due to the strong signal from aggregated complaint features easily separating the two groups, rather than nuanced prediction.
-* **Final Churn Risk Model (`FinalModel.pdf`):**
+* **Final Churn Risk Model:**
     * **Performance:** The Random Forest using only complaint characteristics (Product, Issue, Company, State) achieved ~74% test accuracy. It demonstrated excellent **Recall (98%)** for the 'Churn Risk' class, successfully identifying most potential high-risk complaints based on the defined proxy. However, **Precision (7%)** for this class was very low, indicating a high rate of false positives.
     * **Key Drivers:** Feature importance analysis revealed that specific `Product` categories (e.g., Mortgage, Checking/Savings) and `Issue` types (e.g., Loan modification/collection, Managing an account) were the most influential factors differentiating potential churn risk.
     * **Hot Spots:** The model enabled the identification of ZIP codes with the highest average predicted churn risk based on complaints originating from those areas in the test set.
